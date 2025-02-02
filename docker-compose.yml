@@ -1,0 +1,64 @@
+name: laravel-docker-template
+
+services:
+
+  # PHP Service
+  php-fpm:
+    container_name: php-fpm
+    restart: always
+    build:
+      context: .
+    volumes:
+      - public:/var/www/html
+    networks:
+      - web-app
+    depends_on:
+      - mysql
+
+  # Network
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-server
+    restart: always
+    ports:
+      - 8000:80
+    volumes:
+      - public:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - web-app
+    depends_on:
+      - php-fpm
+
+  # Database
+  mysql:
+    image: mysql:latest
+    container_name: mysql-server
+    restart: always
+    expose:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: $DB_DATABASE
+      MYSQL_ROOT_PASSWORD: $DB_ROOT_PASSWORD
+      MYSQL_USER: $DB_USERNAME
+      MYSQL_PASSWORD: $DB_PASSWORD
+      MYSQL_ALLOW_EMPTY_PASSWORD: true  # Change this once you have a password
+      MYSQL_RANDOM_ROOT_PASSWORD: true  # Change this to your own password
+    volumes:
+      - database:/var/lib/mysql
+    networks:
+      - web-app
+
+volumes:
+  # Shared volume between php-fpm and nginx 
+  # so that nginx can access files to serve 
+  public:
+    name: public_volume
+  # Expose database volume so that we can back it up
+  # and restore it later
+  database:
+    name: database_volume
+
+networks:
+  # Shared network so we don't expose ports
+  web-app:
