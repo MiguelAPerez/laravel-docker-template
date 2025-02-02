@@ -1,8 +1,6 @@
 # Laravel Docker Template
 
-This repository is a template to help setup medium-sized laravel application deployed in a docker container.
-
-> For large application, consider using infrastructure as code tools to deploy your application on a virtual machine.
+This repository is a template to help setup medium-sized laravel application deployed in a docker container. For example you can use the `docker-compose.yml` file to setup a local development environment:
 
 ```mermaid
 flowchart RL
@@ -24,6 +22,8 @@ flowchart RL
 - `VM` - virtual machine (production)
 - `nginx` - networking server
 - `mysql` - mysql database
+
+> For large application, consider using infrastructure as code tools to deploy your application on a virtual machine.
 
 ## Prerequisites
 
@@ -51,6 +51,23 @@ docker compose up -d
 
 ## Usage
 
+To test this repository you can run the following:
+
+```bash
+git clone https://github.com/miguelaperez/laravel-docker-template.git
+cd laravel-docker-template
+
+docker compose up -d
+
+docker compose exec bash
+>   php artisan migrate
+>   php artisan db:seed
+```
+
+Visit [http://localhost:8080](http://localhost:8080) to see the application.
+
+### Building Container Image
+
 To build the docker image, run the following command:
 
 ```bash
@@ -77,6 +94,8 @@ docker push $DOCKER_REPOSITORY:latest
 ```
 
 > Note: Make sure your `composer.json` file is setup with the correct `name`, `version`, and `description`.
+
+### GitHub Actions
 
 If you'd like to enable automatic docker releases for your repository, you can copy the [`github/workflows/docker-release.yml`](.github/workflows/docker-release.yml) file to your repository. This will automatically build and push a new docker each time you create a new tag. It uses the `name` and `version` field in the [`composer.json`](composer.json) file to determine the image tags.
 
